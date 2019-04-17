@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pump_imgae_size">60dp</dimen>
+    <dimen name="bottom_text_size">20sp</dimen>
+    <dimen name="ready_imgae_size">120dp</dimen>
+    <dimen name="ready_text_size">40sp</dimen>
+    <dimen name="password_edittext_textsize">30sp</dimen>
+    <dimen name="login_button_textsize">30sp</dimen>
+    <dimen name="ready_dialog_imageview_size">60dp</dimen>
+    <dimen name="ready_dialog_item_margin_top">20dp</dimen>
+    <dimen name="action_bar_height">50dp</dimen>
+    <dimen name="text_size_42">42sp</dimen>
+    <dimen name="text_size_18">18sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="login_register_label_margin">20dp</dimen>
+    <dimen name="login_linear_margin">35dp</dimen>
+    <dimen name="login_logo_margin_top">10dp</dimen>
+    <dimen name="login_user_margin_top">50dp</dimen>
+    <dimen name="login_edit_padding">15dp</dimen>
+    <dimen name="login_divede_line_margin">10dp</dimen>
+    <dimen name="login_btn_margin_top">50dp</dimen>
+    <dimen name="login_password_margin_top">10dp</dimen>
+    <dimen name="bottom_item_margin_top">10dp</dimen>
+    <dimen name="bottom_items_margin_top">5dp</dimen>
+    <dimen name="setting_Configuration_size">400dp</dimen>
+    <dimen name="setting_text_size">30sp</dimen>
+    <dimen name="port">200dp</dimen>
+    <dimen name="data">400dp</dimen>
+    <dimen name="setting_margin">10dp</dimen>
+    <dimen name="setting_height">60dp</dimen>
+</resources>
