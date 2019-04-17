@@ -13,7 +13,5 @@ public class TestActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.password_safety);
-
-        Toast.makeText(TestActivity.this, "", Toast.LENGTH_LONG).show();
     }
 }
