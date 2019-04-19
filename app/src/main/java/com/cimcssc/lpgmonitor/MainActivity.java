@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +63,8 @@ public class MainActivity extends BaseActivity {
     private Context mContext = MainActivity.this;
     private String receiveData = "";
     private boolean isCRCValid = false;
+    private MediaPlayer mediaPlayer;
+    private int number;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,25 +85,26 @@ public class MainActivity extends BaseActivity {
 //        int[] is = CRC16.getCrc16(myBytes);
     }
 
-    @OnClick({R.id.action_tv1,R.id.action_tv2,R.id.settings_iv})
+    @OnClick({R.id.action_tv1,R.id.action_tv2,R.id.settings_iv,R.id.textView9})
     public void onClick(View v){
         switch (v.getId()){
+            case R.id.textView9:
+                if (mediaPlayer != null && mediaPlayer.isPlaying()){
+                    mediaPlayer.stop();
+                }
             case R.id.settings_iv:
-                startActivity(new Intent(MainActivity.this,SettingActivity.class));
+                number = 1;
+                Dialog("请输入密码",number);
                 break;
             case R.id.action_tv1:
                 //发送数据 0x01 1（十进制）
                 //0x02 2（十进制）
                 //0x03 3（十进制）
-
                 sendData(1);//十进制
-
                 //卸液准备
                 if(action_Tv1.getText().equals(getResources().getString(R.string.unloading_ready_label))){
                         //action_Tv1.setText(getResources().getString(R.string.unloading_label));
                     //发送  卸液准备
-
-
                 }
                 //卸液
                 else if(action_Tv1.getText().equals(getResources().getString(R.string.unloading_label))){
@@ -115,69 +120,24 @@ public class MainActivity extends BaseActivity {
                 }
                 break;
             case R.id.action_tv2:
-                String title = "";
                 //准备
+                number = 2;
                 if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
-                    title = getResources().getString(R.string.ready_dialog_title);
+                    Dialog(getResources().getString(R.string.ready_dialog_title),number);
                 }
                 //待机
                 else if(action_Tv2.getText().equals(getResources().getString(R.string.wait_on_label))){
-                    title = getResources().getString(R.string.wait_on_dialog_title);
+                    Dialog(getResources().getString(R.string.wait_on_dialog_title), number);
                 }
-
-                LayoutInflater inflater = LayoutInflater.from(mContext);
-                View view1 = inflater.inflate(R.layout.ready_dailog_content,null);
-                Button login_Bt = view1.findViewById(R.id.login_bt);
-                ImageView back_Iv = (ImageView) view1.findViewById(R.id.back_iv);
-                ImageView exit_Iv = (ImageView) view1.findViewById(R.id.exit_iv);
-                TextView title_Tv = (TextView) view1.findViewById(R.id.title_tv);
-                title_Tv.setText(title);
-                final EditText password_Et = (EditText) view1.findViewById(R.id.password_et);
-                final Dialog dialog = new AlertDialog.Builder(mContext)
-                        //.setTitle("提示")
-                        .setView(view1)
-                        //.setMessage(mContext.getResources().getString(R.string
-                        //.add_oil_dialog_title))
-                        .setCancelable(false)
-                        .create();
-                dialog.show();
-
-                login_Bt.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String password = password_Et.getText().toString().trim();
-                        if(password.equals("")){
-                            Toast.makeText(mContext,"请输入密码！",Toast.LENGTH_SHORT).show();
-                        }else if(password.equals("1234")){
-                            dialog.dismiss();
-                            Toast.makeText(mContext,"登入成功！",Toast.LENGTH_SHORT).show();
-                            if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
-                                action_Tv2.setVisibility(View.GONE);
-                                action_Tv1.setText(getResources().getString(R.string.unloading_ready_label));
-                            }else{
-                                action_Tv1.setVisibility(View.VISIBLE);
-                                action_Tv2.setVisibility(View.VISIBLE);
-                                action_Tv1.setText(getResources().getString(R.string.wait_on_label));
-                                action_Tv1.setText(getResources().getString(R.string.ready_label));
-                            }
-                        }else{
-                            password_Et.setText("");
-                            Toast.makeText(mContext,"密码错误，请重新输入！",Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                back_Iv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-                exit_Iv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
+                    action_Tv2.setVisibility(View.GONE);
+                    action_Tv1.setText(getResources().getString(R.string.unloading_ready_label));
+                }else{
+                    action_Tv1.setVisibility(View.VISIBLE);
+                    action_Tv2.setVisibility(View.VISIBLE);
+                    action_Tv1.setText(getResources().getString(R.string.wait_on_label));
+                    action_Tv1.setText(getResources().getString(R.string.ready_label));
+                }
                 break;
         }
     }
@@ -311,6 +271,9 @@ public class MainActivity extends BaseActivity {
                                         pump_behind_pressure_Tv.setText(Config.PUMP_BEHIND_FEEDBACK + "");
                                         pump_front_pressure_Tv.setText(Config.PUMP_FRONT_FEEDBACK + "");
                                         level_Tv.setText(Config.LEVEL_FEEDBACK + "");
+
+                                        initMediaPlayer();
+                                        mediaPlayer.start();
                                         //卸液
                                         if(receiveData.equals("2019")){
                                             action_Tv1.setText(getResources().getString(R.string.unloading_label));
@@ -351,10 +314,73 @@ public class MainActivity extends BaseActivity {
 
         return result.toString();
     }
+    public void initMediaPlayer(){
+        try{
+            mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.alarm);
+        }catch (Exception e){
+
+        }
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         close_serial();
+    }
+
+    public void Dialog(String title, final int number){
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view1 = inflater.inflate(R.layout.ready_dailog_content,null);
+        Button login_Bt = view1.findViewById(R.id.login_bt);
+        ImageView back_Iv = (ImageView) view1.findViewById(R.id.back_iv);
+        ImageView exit_Iv = (ImageView) view1.findViewById(R.id.exit_iv);
+        TextView title_Tv = (TextView) view1.findViewById(R.id.title_tv);
+        title_Tv.setText(title);
+        final EditText password_Et = (EditText) view1.findViewById(R.id.password_et);
+        password_Et.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        final Dialog dialog = new AlertDialog.Builder(mContext)
+                //.setTitle("提示")
+                .setView(view1)
+                //.setMessage(mContext.getResources().getString(R.string
+                //.add_oil_dialog_title))
+                .setCancelable(false)
+                .create();
+        dialog.show();
+
+        login_Bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String password = password_Et.getText().toString().trim();
+                if(password.equals("")){
+                    Toast.makeText(mContext,"请输入密码！",Toast.LENGTH_SHORT).show();
+                }else if(password.equals("1234")){
+                    dialog.dismiss();
+                    Toast.makeText(mContext,"登入成功！",Toast.LENGTH_SHORT).show();
+                    if (number == 1){
+                        startActivity(new Intent(MainActivity.this,SettingActivity.class));
+                    }
+                }else{
+                    password_Et.setText("");
+                    Toast.makeText(mContext,"密码错误，请重新输入！",Toast.LENGTH_SHORT).show();
+                }
+                /*switch (view.getId()){
+                    case R.id.settings_iv:
+                        startActivity(new Intent(MainActivity.this, SettingActivity.class));
+                }*/
+            }
+        });
+        /*back_Iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });*/
+        exit_Iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
     }
 }

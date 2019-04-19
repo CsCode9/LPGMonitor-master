@@ -117,7 +117,7 @@
                 android:id="@+id/APN_name_et"
                 android:layout_width="@dimen/data"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
+                android:inputType="text"
                 android:text="@string/APN_name"
                 android:textSize="@dimen/setting_text_size"
                 android:background="@color/setting"

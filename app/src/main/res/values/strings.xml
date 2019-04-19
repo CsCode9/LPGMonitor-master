@@ -38,7 +38,6 @@
     <string name="cavitation_pressure">气蚀压力</string>
     <string name="cavitation_pressure_unit">MPa</string>
     <string name="save_label">保 存</string>
-    <string name="title_parameter_configuretion">参数配置</string>
     <string name="port">端口</string>
     <string name="port_name">Szcimc.gd</string>
     <string name="IP">IP</string>

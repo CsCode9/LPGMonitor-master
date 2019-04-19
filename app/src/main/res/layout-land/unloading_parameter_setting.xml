@@ -154,7 +154,7 @@
                 android:id="@+id/compensation_coefficient_name_et"
                 android:layout_width="@dimen/data"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:inputType="numberDecimal"
                 android:text="@string/compensation_coefficient_name"
                 android:textSize="@dimen/setting_text_size"
                 android:background="@color/setting"
@@ -260,7 +260,7 @@
                 android:layout_centerInParent="true"
                 android:layout_marginTop="20dp"
                 android:layout_width="600dp"
-                android:layout_height="100dp"
+                android:layout_height="60dp"
                 android:background="@color/button_bg_color"
                 android:textSize="@dimen/setting_text_size"
                 android:text="@string/save_label"/>

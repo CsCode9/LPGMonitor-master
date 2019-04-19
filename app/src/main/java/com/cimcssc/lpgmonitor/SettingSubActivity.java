@@ -35,6 +35,8 @@ public class SettingSubActivity extends BaseActivity {
     EditText max_tank_pressure_Et;
     @BindView(R.id.delay_et)
     EditText delay_Et;
+    @BindView(R.id.title_tv)
+    TextView title_Tv;
 
     private SharedPreferences sp;
 
@@ -43,6 +45,7 @@ public class SettingSubActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parameter_setting);
         ButterKnife.bind(this);
+        title_Tv.setText("停机参数设置");
 
         sp = getSharedPreferences("configs",MODE_PRIVATE);
         readConfigs();

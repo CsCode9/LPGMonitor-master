@@ -19,5 +19,6 @@
         <item name="colorControlHighlight">@color/colorPrimary</item>
         <item name="android:windowBackground">@color/colorPrimary</item>
     </style>
+    <style name="MyDialog"></style>
 
 </resources>
