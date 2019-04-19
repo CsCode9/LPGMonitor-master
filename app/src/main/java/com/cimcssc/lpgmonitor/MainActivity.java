@@ -40,8 +40,6 @@ public class MainActivity extends BaseActivity {
     TextView action_Tv1;
     @BindView(R.id.action_tv2)
     TextView action_Tv2;
-    @BindView(R.id.textView9)
-    TextView TextView9;
     @BindView(R.id.settings_iv)
     ImageView settings_Iv;
     @BindView(R.id.pump_behind_pressure_tv)
@@ -64,7 +62,7 @@ public class MainActivity extends BaseActivity {
     private String receiveData = "";
     private boolean isCRCValid = false;
     private MediaPlayer mediaPlayer;
-    private int number;
+    private int number = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +90,7 @@ public class MainActivity extends BaseActivity {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()){
                     mediaPlayer.stop();
                 }
+                break;
             case R.id.settings_iv:
                 number = 1;
                 Dialog("请输入密码",number);
