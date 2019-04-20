@@ -203,12 +203,12 @@ public class MainActivity extends BaseActivity {
                                 public void run() {
                                     String[] strs = receiveData.split(" ");
 
-                                    Config.FRAME_HEADER_FEEDBACK = Integer.parseInt(strs[0],16);
+                                    Config.FRAME_HEADER_FEEDBACK = Integer.parseInt(strs[0],16);//将一个十六进制数转为十进制
                                     Config.COMMAND_WORD_FEEDBACK = Integer.parseInt(strs[1],16);
                                     Config.DATA_LENGTH_FEEDBACK = Integer.parseInt(strs[2],16);
                                     //泵前压力
                                     Config.PUMP_FRONT_FEEDBACK =
-                                            TransferValue.getDoubleValue(strs[3],strs[4]);
+                                            TransferValue.getDoubleValue(strs[3],strs[4]);//
                                     //泵后压力
                                     Config.PUMP_BEHIND_FEEDBACK =
                                             TransferValue.getDoubleValue(strs[5],strs[6]);
@@ -227,8 +227,14 @@ public class MainActivity extends BaseActivity {
                                     //从机状态
                                     Config.STATUS_FEEDBACK = Integer.parseInt(strs[15],16);
 
+                                    //设备状态
+                                    Config.DEVICE_STATUS_FEEDBACK1 = Integer.parseInt(strs[16], 16);
+                                    Config.DEVICE_STATUS_FEEDBACK2 = Integer.parseInt(strs[17], 16);
+                                    Config.DEVICE_STATUS_FEEDBACK3 = Integer.parseInt(strs[18], 16);
                                     //帧尾
                                     Config.LEVEL_FEEDBACK = Integer.parseInt(strs[21],16);
+
+
 
 
                                     //开始数据校验
@@ -270,6 +276,16 @@ public class MainActivity extends BaseActivity {
                                         pump_behind_pressure_Tv.setText(Config.PUMP_BEHIND_FEEDBACK + "");
                                         pump_front_pressure_Tv.setText(Config.PUMP_FRONT_FEEDBACK + "");
                                         level_Tv.setText(Config.LEVEL_FEEDBACK + "");
+
+
+                                        //设备状态
+                                        //
+                                        String status1 =
+                                                Integer.toBinaryString(Config.DEVICE_STATUS_FEEDBACK1);
+                                        String status2 =
+                                                Integer.toBinaryString(Config.DEVICE_STATUS_FEEDBACK2);
+                                        String status3 =
+                                                Integer.toBinaryString(Config.DEVICE_STATUS_FEEDBACK3);
 
                                         initMediaPlayer();
                                         mediaPlayer.start();

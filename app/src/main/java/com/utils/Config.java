@@ -27,5 +27,8 @@ public class Config {
     public static double FLOWMETER_UNLOADING_QUANTITY_FEEDBACK;//流量计卸液量
     public static double FLOWMETER_RATE_FEEDBACK;//流量计瞬时流量
     public static int STATUS_FEEDBACK;//从机状态
+    public static int DEVICE_STATUS_FEEDBACK1;//设备状态1
+    public static int DEVICE_STATUS_FEEDBACK2;//设备状态2
+    public static int DEVICE_STATUS_FEEDBACK3;//设备状态3
     public static int FRAME_TAIL_FEEDBACK;//帧尾
 }
