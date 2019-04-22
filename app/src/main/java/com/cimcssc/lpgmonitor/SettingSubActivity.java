@@ -48,7 +48,7 @@ public class SettingSubActivity extends BaseActivity {
         title_Tv.setText("停机参数设置");
 
         sp = getSharedPreferences("configs",MODE_PRIVATE);
-        readConfigs();
+
 
         addWatcher(stop_flow_Et);
         addWatcher(stop_pump_pressure_Et);
@@ -56,6 +56,7 @@ public class SettingSubActivity extends BaseActivity {
         addWatcher(max_liquid_level_Et);
         addWatcher(max_tank_pressure_Et);
         addWatcher(delay_Et);
+        readConfigs();
     }
 
     public void readConfigs(){

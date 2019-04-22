@@ -44,12 +44,13 @@ public class UnloadingActivity extends BaseActivity {
         title_Tv.setText("卸液参数设置");
 
         sp = getSharedPreferences("configs",MODE_PRIVATE);
-        readConfigs();
+
 
         addWatcher(unit_name_Et);
         addWatcher(unit_price_name_Et);
         addWatcher(standard_coefficient_name_Et);
         addWatcher(compensation_coefficient_name_Et);
+        readConfigs();
     }
 
     public void readConfigs(){

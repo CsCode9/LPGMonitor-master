@@ -97,23 +97,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center">
 
-            <Button
-                android:layout_width="150dp"
-                android:layout_height="100dp"
-                android:text="点击消警"
-                android:gravity="center"
-                android:background="#DFD7D7"
-                android:textSize="35sp"
-                android:textColor="#1B0707"
-                android:layout_centerInParent="true"/>
-
-        </RelativeLayout>
     </LinearLayout>
 
     <RelativeLayout
@@ -122,7 +106,7 @@
         android:layout_weight="5"
         android:orientation="vertical"
         android:layout_margin="6dp"
-        android:background="#4D4646"
+        android:background="#FC0303"
         android:layout_gravity="center">
 
         <TextView
@@ -134,32 +118,22 @@
             android:gravity="center"
             android:layout_margin="5dp"/>
 
-        <LinearLayout
-            android:layout_below="@+id/alarm_list"
+        <ScrollView
+            android:layout_below="@id/alarm_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
             android:layout_gravity="center">
 
             <TextView
+                android:id="@+id/alarm_tv"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:text="1.燃气浓度90%，超过上限：60%"
                 android:textSize="23sp"
                 android:layout_margin="5dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:text="2.储罐压力1.3Mpa,超过设定值：0.9Mpa"
-                android:textSize="23sp"
-                android:layout_margin="5dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:text="3.流量计通讯中断"
-                android:textSize="23sp"
-                android:layout_margin="5dp"/>
-        </LinearLayout>
+
+
+        </ScrollView>
 
     </RelativeLayout>
 

@@ -31,4 +31,17 @@ public class Config {
     public static int DEVICE_STATUS_FEEDBACK2;//设备状态2
     public static int DEVICE_STATUS_FEEDBACK3;//设备状态3
     public static int FRAME_TAIL_FEEDBACK;//帧尾
+
+    public static int current_action_flag = 1;
+
+    //控制标志
+
+    //从机状态
+    public static int MOMENT_STATUS_FEEDBACK;//待机
+    public static int UNLOADING_PREPARE_STATUS_FEEDBACK1;//卸液准备
+    public static int UNLOADING_STATUS_FEEDBACK1;//卸液中
+    public static int UNLOADING_END_STATUS_FEEDBACK1;//卸液结束
+    public static int STOP_ALARM_STATUS_FEEDBACK1;//消警
+    public static int ORDINAR_ALARM_STATUS_FEEDBACK1;//普通报警
+    public static int EMERGENCY_STOP_STATUS_FEEDBACK1;//紧急停止
 }

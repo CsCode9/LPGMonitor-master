@@ -42,11 +42,12 @@ public class GatewayActivity extends BaseActivity {
         title_Tv.setText("网关参数设置");
 
         sp = getSharedPreferences("configs",MODE_PRIVATE);
-        readConfigs();
+
 
         addWatcher(port_name_Et);
         addWatcher(IP_dress_Et);
         addWatcher(APN_name_Et);
+        readConfigs();
     }
 
     public void readConfigs(){
