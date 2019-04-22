@@ -72,7 +72,7 @@ public class MainActivity extends BaseActivity {
     private SerialPort serialttyS1;
     private InputStream ttyS1InputStream;
     private OutputStream ttyS1OutputStream;
-    String readDatas = null;
+    //String readDatas = null;
     StringBuffer sb = new StringBuffer();
 
     private Context mContext = MainActivity.this;
@@ -119,9 +119,9 @@ public class MainActivity extends BaseActivity {
     public void onClick(View v){
         switch (v.getId()){
             case R.id.textView9:
-                if (mediaPlayer != null && mediaPlayer.isPlaying()){
+                /*if (mediaPlayer != null && mediaPlayer.isPlaying()){
                 mediaPlayer.stop();
-            }
+            }*/
                 break;
             case R.id.settings_iv:
                 number = 1;
@@ -154,7 +154,7 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.action_tv2:
                 //准备
-                number = 2;
+                //number = 2;
                 if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
                     Config.current_action_flag = 2;
                     Dialog(getResources().getString(R.string.ready_dialog_title),Config.current_action_flag);

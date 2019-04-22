@@ -36,6 +36,8 @@ public class Config {
 
     //控制标志
 
+
+
     //从机状态
     public static int MOMENT_STATUS_FEEDBACK;//待机
     public static int UNLOADING_PREPARE_STATUS_FEEDBACK1;//卸液准备
