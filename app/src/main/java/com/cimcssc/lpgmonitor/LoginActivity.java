@@ -1,6 +1,7 @@
 package com.cimcssc.lpgmonitor;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -31,6 +32,10 @@ public class LoginActivity extends BaseActivity {
     EditText password_Et;
     @BindView(R.id.login_bt)
     Button login_Bt;
+
+    private SharedPreferences shared;
+    private String adminpassword;
+    private String superpassword;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,12 @@ public class LoginActivity extends BaseActivity {
         password_Cb.setOnCheckedChangeListener(new PasswordChange());
         addWatcher(user_Et);
         addWatcher(password_Et);
+        shared = getSharedPreferences("Password",MODE_PRIVATE);
+        adminpassword = shared.getString("AdminPassword"," ");
+        superpassword = shared.getString("SuperPassword"," ");
+        if (adminpassword.equals(" ") || superpassword.equals(" ")){
+            startActivity(new Intent(LoginActivity.this, SafetyActivity.class));
+        }
     }
 
     class PasswordChange implements CompoundButton.OnCheckedChangeListener{
@@ -88,11 +99,8 @@ public class LoginActivity extends BaseActivity {
                 if(login_Bt.isClickable()){
                     String name = user_Et.getText().toString().trim();
                     String password = password_Et.getText().toString().trim();
-                    if(name.equals("admin") && password.equals("1234")){
+                    if(password.equals(adminpassword) || password.equals(superpassword)){
                         startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                        finish();
-                    }else{
-                        Toast.makeText(LoginActivity.this,"用户名或密码不正确，请重新输入！",Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;

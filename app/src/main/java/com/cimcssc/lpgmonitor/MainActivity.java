@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Looper;
@@ -82,6 +83,7 @@ public class MainActivity extends BaseActivity {
     private int number = 0;
     private StringBuffer warningBuffer = new StringBuffer();
     private boolean isAbnormal = false;
+    private SharedPreferences shared;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -550,10 +552,15 @@ public class MainActivity extends BaseActivity {
         login_Bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                shared = getSharedPreferences("Password",MODE_PRIVATE);
+                String adminpassword = shared.getString("AdminPassword"," ");
+                String superpassword = shared.getString("SuperPassword", " ");
+
+
                 String password = password_Et.getText().toString().trim();
-                if(password.equals("")){
+                if(password.equals(" ")){
                     Toast.makeText(mContext,"请输入密码！",Toast.LENGTH_SHORT).show();
-                }else if(password.equals("1234")){
+                }else if(password.equals(adminpassword) || password.equals(superpassword)){
                     dialog.dismiss();
                     Toast.makeText(mContext,"登入成功！",Toast.LENGTH_SHORT).show();
 

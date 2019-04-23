@@ -34,18 +34,18 @@
                 android:gravity="center"
                 android:layout_marginLeft="50dp"/>
 
-            <EditText
+            <TextView
                 android:id="@+id/unit_name_et"
                 android:layout_width="@dimen/data"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:textSize="@dimen/setting_text_size"
-                android:text="@string/unit_name"
+                android:layout_marginLeft="50dp"
                 android:background="@color/setting"
                 android:gravity="center"
+                android:inputType="text"
+                android:text="@string/unit_name"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
-                android:layout_marginLeft="50dp"/>
+                android:textSize="@dimen/setting_text_size" />
 
             <TextView
                 android:layout_width="@dimen/port"
