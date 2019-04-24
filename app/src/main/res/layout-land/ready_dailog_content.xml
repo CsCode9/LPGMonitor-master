@@ -35,14 +35,29 @@
         android:layout_width="wrap_content"
         android:gravity="center_horizontal"
         android:layout_height="wrap_content"/>
-    <EditText
-        android:layout_marginTop="@dimen/ready_dialog_item_margin_top"
-        android:id="@+id/password_et"
+
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:textSize="@dimen/password_edittext_textsize"
-        android:inputType="number"
-        android:background="@color/white"/>
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_marginTop="@dimen/ready_dialog_item_margin_top"
+            android:id="@+id/password_et"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="@dimen/password_edittext_textsize"
+            android:inputType="number"
+            android:background="@color/white"/>
+
+        <TextView
+            android:layout_marginTop="@dimen/ready_dialog_item_margin_top"
+            android:id="@+id/text_et"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="@dimen/password_edittext_textsize"
+            android:background="@color/white"
+            android:visibility="gone"/>
+    </FrameLayout>
     <Button
         android:layout_marginTop="@dimen/ready_dialog_item_margin_top"
         android:id="@+id/login_bt"

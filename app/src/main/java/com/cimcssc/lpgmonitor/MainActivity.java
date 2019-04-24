@@ -31,7 +31,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
+import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -84,6 +87,11 @@ public class MainActivity extends BaseActivity {
     private StringBuffer warningBuffer = new StringBuffer();
     private boolean isAbnormal = false;
     private SharedPreferences shared;
+    private boolean alarm = false;
+    private StringBuffer condition = new StringBuffer();
+    private Byte first;
+    private List<String> list;
+    private static int ascNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,17 +141,16 @@ public class MainActivity extends BaseActivity {
                 //发送数据 0x01 1（十进制）
                 //0x02 2（十进制）
                 //0x03 3（十进制）
-                sendData(1);//十进制
+                sendData(3);//十进制
                 //卸液准备
                 if(action_Tv1.getText().equals(getResources().getString(R.string.unloading_ready_label))){
                     //action_Tv1.setText(getResources().getString(R.string.unloading_label));
                     //发送  卸液准备
-                    sendData(07);//参照SendBytes类
-
+                    sendData(01);//参照SendBytes类
                 }
                 //卸液
                 else if(action_Tv1.getText().equals(getResources().getString(R.string.unloading_label))){
-
+                    action_Tv1.setText(getResources().getString(R.string.unloading));
                 }
                 //卸液结束
                 else if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
@@ -152,6 +159,9 @@ public class MainActivity extends BaseActivity {
                 //故障
                 else if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
 
+                }
+                else if (action_Tv1.getText().equals(getResources().getString(R.string.wait_on_label))){
+                    sendData(3);
                 }
                 break;
             case R.id.action_tv2:
@@ -170,9 +180,17 @@ public class MainActivity extends BaseActivity {
                 break;
 
             case R.id.stop_alarm_bt:
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    mediaPlayer.stop();
+                if (alarm == false){
+                    sendData(6);
+                    alarm = true;
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        mediaPlayer.stop();
+                    }
                 }
+                if (alarm == true){
+                    alarm = false;
+                }
+
         }
     }
     /* 打开串口 */
@@ -222,21 +240,33 @@ public class MainActivity extends BaseActivity {
                 int size;
                 byte[] buffer = new byte[1024];
                 String s = "";
+                String f = "";
+                //String resultdata = " ";
                 try{
                     while (ttyS1InputStream != null && (size = ttyS1InputStream.read(buffer)) > 0) {
                         sb.append(new String(buffer,0,size));
-
                         s = sb.toString().trim();
-                        if(s.startsWith("3C") && s.endsWith("3E")){
+                        String k = bytes2HexString(buffer,size);
+                        Log.d("MainActivity.this", "十六进制数为：" + k);
+                        /*list = new ArrayList<String>();
+                        for (int i = 0; i < s.length(); i++){
+                            String ss = String.valueOf(s.charAt(i));
+                            list.add(ss);
+                        }
+
+                        String d = list.get(19);*/
+                        //resultdata = s.substring(s.indexOf("<")+1, s.indexOf(">"));
+                        if(s.startsWith("<") && s.endsWith(">")){
                             receiveData = sb.toString().trim();
                             Log.d("receivedata","receive data is: " + receiveData);
                             if(!receiveData.contains(" ")){
                                 receiveData = transferString(receiveData);
                             }
                             sb = new StringBuffer();
+                            condition = new StringBuffer();
 
                             String[] strs = receiveData.split(" ");
-
+                            condition.append(strs);
                             Config.FRAME_HEADER_FEEDBACK = Integer.parseInt(strs[0],16);//将一个十六进制数转为十进制
                             Config.COMMAND_WORD_FEEDBACK = Integer.parseInt(strs[1],16);
                             Config.DATA_LENGTH_FEEDBACK = Integer.parseInt(strs[2],16);
@@ -278,6 +308,10 @@ public class MainActivity extends BaseActivity {
 
                             //开始数据校验
                             byte[] b = new byte[]{
+                                    (byte)Integer.parseInt(strs[0],16),
+                                    (byte)Integer.parseInt(strs[1],16),
+
+                                    (byte)Integer.parseInt(strs[2],16),
                                     (byte)Integer.parseInt(strs[3],16),
                                     (byte)Integer.parseInt(strs[4],16),
 
@@ -458,15 +492,18 @@ public class MainActivity extends BaseActivity {
 //                                            Intent i = new Intent(MainActivity.this,AlarmActivity.class);
 //                                            i.putExtra("msg",warningBuffer.toString());
 //                                            startActivity(i);
+                                            if (alarm == false){
+                                                alarm_Rl.setVisibility(View.VISIBLE);
+                                                stop_alarm_Rl.setVisibility(View.VISIBLE);
+                                                print_Rl.setVisibility(View.GONE);
+                                                pressure_Ll.setVisibility(View.GONE);
+                                                sendData(5);
+                                                mediaPlayer.start();
+                                                warningBuffer.append(warningBuffer);
+                                                alarm_Tv.setText(warningBuffer.toString());
+                                            }else {
 
-                                            alarm_Rl.setVisibility(View.VISIBLE);
-                                            stop_alarm_Rl.setVisibility(View.VISIBLE);
-                                            print_Rl.setVisibility(View.GONE);
-                                            pressure_Ll.setVisibility(View.GONE);
-                                            mediaPlayer.start();
-
-                                            warningBuffer.append(warningBuffer);
-                                            alarm_Tv.setText(warningBuffer.toString());
+                                            }
                                         }else {//无异常，准备就绪
                                             alarm_Rl.setVisibility(View.GONE);
                                             stop_alarm_Rl.setVisibility(View.GONE);
@@ -529,7 +566,7 @@ public class MainActivity extends BaseActivity {
         close_serial();
     }
 
-    public void Dialog(String title, final int number){
+    public void Dialog(final String title, final int number){
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view1 = inflater.inflate(R.layout.ready_dailog_content,null);
@@ -569,7 +606,7 @@ public class MainActivity extends BaseActivity {
                     //创建定时器对象
                     Timer t= new Timer();
                     //在0秒后执行MyTask类中的run方法,后面每20秒跑一次
-                    t.schedule(mySelectTask, 0,1000 * 10);
+                    t.schedule(mySelectTask, 0,200);
 
                     if (Config.current_action_flag == 1){
                         startActivity(new Intent(MainActivity.this,SettingActivity.class));
@@ -577,18 +614,22 @@ public class MainActivity extends BaseActivity {
                     if (Config.current_action_flag == 2){
                         if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
                             action_Tv2.setVisibility(View.GONE);
+                            sendData(1);
                             action_Tv1.setText(getResources().getString(R.string.unloading_ready_label));
 
                         }else{
                             action_Tv1.setVisibility(View.VISIBLE);
                             action_Tv2.setVisibility(View.VISIBLE);
                             action_Tv1.setText(getResources().getString(R.string.wait_on_label));
-                            action_Tv1.setText(getResources().getString(R.string.ready_label));
+                            action_Tv2.setText(getResources().getString(R.string.ready_label));
                         }
                     }
                     if (Config.current_action_flag == 3){
                         //查询从机是否准备好
                         sendData(01);
+                        if (isAbnormal == false){
+                            sendData(3);
+                        }
                     }
                 }else{
                     password_Et.setText("");
@@ -613,4 +654,17 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
+
+    public static String bytes2HexString(byte[] b, int size) {
+        String ret = "";
+        for (int i = 0; i < size; i++) {
+            String hex = Integer.toHexString(b[i] & 0xFF);
+            if (hex.length() == 1) {
+                hex = '0' + hex;
+            }
+            ret += hex.toUpperCase();
+        }
+        return ret;
+    }
+
 }

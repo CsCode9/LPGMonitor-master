@@ -34,9 +34,11 @@ public class CRC16 {
             }
         }
         //获取低8位
-        int low = wcrc >> 8;//或wcrc / 256；
+        //修改后为高八位
+        int up = wcrc >> 8;//或wcrc / 256；
         //获取高8位
-        int up = wcrc % 256;
+        //修改后为低八位
+        int low = wcrc % 256;
 
         int[] crc = {up,low};//10进制
         return crc;

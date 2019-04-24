@@ -7,7 +7,7 @@ public class Config {
     //串口文件路径
     public static String pathname = "/dev/ttyS2";
     //波特率
-    public static int baudrate = 115200;
+    public static int baudrate = 9600;
 
     //主机发送命令
     public static byte FRAME_HEADER_SEND = 0x3C;//帧头
