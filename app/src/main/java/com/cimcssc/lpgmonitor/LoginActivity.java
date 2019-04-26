@@ -1,5 +1,8 @@
 package com.cimcssc.lpgmonitor;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -36,11 +40,13 @@ public class LoginActivity extends BaseActivity {
     private SharedPreferences shared;
     private String adminpassword;
     private String superpassword;
+    private Context mContext;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        mContext = LoginActivity.this;
         password_Cb.setOnCheckedChangeListener(new PasswordChange());
         addWatcher(user_Et);
         addWatcher(password_Et);
@@ -48,7 +54,7 @@ public class LoginActivity extends BaseActivity {
         adminpassword = shared.getString("AdminPassword"," ");
         superpassword = shared.getString("SuperPassword"," ");
         if (adminpassword.equals(" ") || superpassword.equals(" ")){
-            startActivity(new Intent(LoginActivity.this, SafetyActivity.class));
+            Dialog();
         }
     }
 
@@ -99,11 +105,39 @@ public class LoginActivity extends BaseActivity {
                 if(login_Bt.isClickable()){
                     String name = user_Et.getText().toString().trim();
                     String password = password_Et.getText().toString().trim();
-                    if(password.equals(adminpassword) || password.equals(superpassword)){
+                    if(password.equals("admin") || password.equals("1234")){
                         startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                    }else {
+                        Toast.makeText(mContext, "用户名或密码错误", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
         }
+    }
+
+    public void Dialog(){
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view1 = inflater.inflate(R.layout.setting_password_sure_dialog,null);
+        final Dialog dialog = new AlertDialog.Builder(mContext)
+                //.setTitle("提示")
+                .setView(view1)
+                //.setMessage(mContext.getResources().getString(R.string
+                //.add_oil_dialog_title))
+                .setCancelable(true)
+                .create();
+        dialog.show();
+        Button password_sure_Bt = (Button) view1.findViewById(R.id.password_sure_bt);
+        password_sure_Bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this, SafetyActivity.class));
+            }
+        });
+
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        finish();
     }
 }

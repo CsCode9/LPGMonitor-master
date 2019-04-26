@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Looper;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.serial.SerialPort;
 import com.utils.CRC16;
+import com.utils.CheckMoth;
 import com.utils.Config;
 import com.utils.SelectTask;
 import com.utils.SendBytes;
@@ -34,6 +36,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 import butterknife.BindView;
@@ -92,6 +95,7 @@ public class MainActivity extends BaseActivity {
     private Byte first;
     private List<String> list;
     private static int ascNum;
+    private boolean istrue = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +173,7 @@ public class MainActivity extends BaseActivity {
                 //number = 2;
                 if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
                     Config.current_action_flag = 2;
+                    istrue = false;
                     Dialog(getResources().getString(R.string.ready_dialog_title),Config.current_action_flag);
                 }
                 //待机
@@ -236,9 +241,10 @@ public class MainActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 Looper.prepare();
                 int size;
-                byte[] buffer = new byte[1024];
+                final byte[] buffer = new byte[100];
                 String s = "";
                 String f = "";
                 //String resultdata = " ";
@@ -246,8 +252,6 @@ public class MainActivity extends BaseActivity {
                     while (ttyS1InputStream != null && (size = ttyS1InputStream.read(buffer)) > 0) {
                         sb.append(new String(buffer,0,size));
                         s = sb.toString().trim();
-                        String k = bytes2HexString(buffer,size);
-                        Log.d("MainActivity.this", "十六进制数为：" + k);
                         /*list = new ArrayList<String>();
                         for (int i = 0; i < s.length(); i++){
                             String ss = String.valueOf(s.charAt(i));
@@ -257,7 +261,9 @@ public class MainActivity extends BaseActivity {
                         String d = list.get(19);*/
                         //resultdata = s.substring(s.indexOf("<")+1, s.indexOf(">"));
                         if(s.startsWith("<") && s.endsWith(">")){
-                            receiveData = sb.toString().trim();
+                            receiveData = bytes2HexString(buffer,size);
+                            Log.d("MainActivity.this", "十六进制数为：" + receiveData);
+                            receiveData = receiveData.toString().trim();
                             Log.d("receivedata","receive data is: " + receiveData);
                             if(!receiveData.contains(" ")){
                                 receiveData = transferString(receiveData);
@@ -266,6 +272,7 @@ public class MainActivity extends BaseActivity {
                             condition = new StringBuffer();
 
                             String[] strs = receiveData.split(" ");
+
                             condition.append(strs);
                             Config.FRAME_HEADER_FEEDBACK = Integer.parseInt(strs[0],16);//将一个十六进制数转为十进制
                             Config.COMMAND_WORD_FEEDBACK = Integer.parseInt(strs[1],16);
@@ -277,24 +284,24 @@ public class MainActivity extends BaseActivity {
                             Config.PUMP_BEHIND_FEEDBACK =
                                     TransferValue.getDoubleValue(strs[5],strs[6]);
                             //液位
-                            Config.LEVEL_FEEDBACK = TransferValue.getDoubleValue(strs[7], strs[8]);
+                            Config.LEVEL_FEEDBACK = TransferValue.getDoubleValueLiquidLevel(strs[7], strs[8]);
                             //流量计温度
                             Config.FLOWMETER_TEMPERATURE_FEEDBACK =
                                     TransferValue.getDoubleValue(strs[9],strs[10]);
                             //流量计卸液量
                             Config.FLOWMETER_UNLOADING_QUANTITY_FEEDBACK =
-                                    TransferValue.getDoubleValue(strs[11],strs[12]);
+                                    TransferValue.getDoubleValueFew(strs[11],strs[12],strs[13],strs[14]);
                             //流量计瞬时流量
                             Config.FLOWMETER_RATE_FEEDBACK =
-                                    TransferValue.getDoubleValue(strs[13],strs[14]);
+                                    TransferValue.getDoubleValue(strs[15],strs[16]);
 
                             //从机状态
-                            Config.STATUS_FEEDBACK = Integer.parseInt(strs[15],16);
+                            Config.STATUS_FEEDBACK = Integer.parseInt(strs[17],16);
 
                             //设备状态
-                            Config.DEVICE_STATUS_FEEDBACK1 = Integer.parseInt(strs[16], 16);
-                            Config.DEVICE_STATUS_FEEDBACK2 = Integer.parseInt(strs[17], 16);
-                            Config.DEVICE_STATUS_FEEDBACK3 = Integer.parseInt(strs[18], 16);
+                            Config.DEVICE_STATUS_FEEDBACK1 = Integer.parseInt(strs[18], 16);
+                            Config.DEVICE_STATUS_FEEDBACK2 = Integer.parseInt(strs[19], 16);
+                            Config.DEVICE_STATUS_FEEDBACK3 = Integer.parseInt(strs[20], 16);
 
                             //设备状态
                             final String status1 =
@@ -304,7 +311,7 @@ public class MainActivity extends BaseActivity {
                             String status3 =
                                     Integer.toBinaryString(Config.DEVICE_STATUS_FEEDBACK3);
                             //帧尾
-                            Config.LEVEL_FEEDBACK = Integer.parseInt(strs[21],16);
+                            Config.FRAME_TAIL_FEEDBACK = Integer.parseInt(strs[22],16);
 
                             //开始数据校验
                             byte[] b = new byte[]{
@@ -334,12 +341,22 @@ public class MainActivity extends BaseActivity {
 
                                     (byte)Integer.parseInt(strs[16],16),
                                     (byte)Integer.parseInt(strs[17],16),
-                                    (byte)Integer.parseInt(strs[18],16)
+                                    (byte)Integer.parseInt(strs[18],16),
+                                    (byte)Integer.parseInt(strs[19],16),
+                                    (byte)Integer.parseInt(strs[20],16)
                             };
-                            int[] ints = CRC16.getCrc16(b);
+                            int ints = CheckMoth.getCheck(b);
+
+
                             //判断校验码是否正确
-                            if(ints[0] == Integer.parseInt(strs[19],16) &&
-                                    ints[1] == Integer.parseInt(strs[20],16)){
+                            /*if(ints[0] == Integer.parseInt(strs[21],16) &&
+                                    ints[1] == Integer.parseInt(strs[22],16)){
+                                isCRCValid = true;
+                            }else{
+                                isCRCValid = false;
+                            }*/
+
+                            if(ints == Integer.parseInt(strs[21], 16)){
                                 isCRCValid = true;
                             }else{
                                 isCRCValid = false;
@@ -350,11 +367,9 @@ public class MainActivity extends BaseActivity {
                                 public void run() {
                                     //数据校验通过
                                     if(isCRCValid){
-                                        pump_behind_pressure_Tv.setText(Config.PUMP_BEHIND_FEEDBACK + "");
-                                        pump_front_pressure_Tv.setText(Config.PUMP_FRONT_FEEDBACK + "");
-                                        level_Tv.setText(Config.LEVEL_FEEDBACK + "");
-
-
+                                        pump_behind_pressure_Tv.setText(Config.PUMP_BEHIND_FEEDBACK + " MPa");
+                                        pump_front_pressure_Tv.setText(Config.PUMP_FRONT_FEEDBACK + " MPa");
+                                        level_Tv.setText(Config.LEVEL_FEEDBACK + " mmH2o");
                                         //mediaPlayer.start();
 
                                         //检查从机是否进入 卸液准备
@@ -371,7 +386,7 @@ public class MainActivity extends BaseActivity {
                                                 isAbnormal = true;
                                                 warningBuffer.append("泵后压力值异常\n");
                                             }
-                                            if(Config.LEVEL_FEEDBACK > 100){
+                                            if(Config.LEVEL_FEEDBACK > 2000){
                                                 isAbnormal = true;
                                                 warningBuffer.append("液位值异常\n");
                                             }
@@ -379,10 +394,10 @@ public class MainActivity extends BaseActivity {
                                                 isAbnormal = true;
                                                 warningBuffer.append("流量计温度异常\n");
                                             }
-                                            if(Config.FLOWMETER_UNLOADING_QUANTITY_FEEDBACK > 100){
+                                            /*if(Config.FLOWMETER_UNLOADING_QUANTITY_FEEDBACK > 1000){
                                                 isAbnormal = true;
                                                 warningBuffer.append("流量计卸液量异常\n");
-                                            }
+                                            }*/
                                             if(Config.FLOWMETER_RATE_FEEDBACK > 100){
                                                 isAbnormal = true;
                                                 warningBuffer.append("流量计瞬时流量异常\n");
@@ -391,7 +406,7 @@ public class MainActivity extends BaseActivity {
                                             //2.从机状态
                                             if(Config.STATUS_FEEDBACK !=  1){
                                                 isAbnormal = true;
-                                                //warningBuffer.append("从机出现异常\n");
+                                                warningBuffer.append("从机出现异常\n");
                                             }
                                             //3.状态位
                                             //0-7 位
@@ -486,13 +501,35 @@ public class MainActivity extends BaseActivity {
                                                 warningBuffer.append("充装枪已经离开枪座。\n");
                                             }*/
                                         }
+                                        Timer t = new Timer();
+                                        t.schedule(new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                if (buffer == null || buffer.length == 0){
+                                                    isAbnormal = true;
+                                                    warningBuffer.append("从机未响应");
+                                                }
+                                            }
+                                        }, 0, 1000);
 
                                         //如果有异常
                                         if(isAbnormal){
 //                                            Intent i = new Intent(MainActivity.this,AlarmActivity.class);
 //                                            i.putExtra("msg",warningBuffer.toString());
 //                                            startActivity(i);
-                                            if (alarm == false){
+                                            alarm_Rl.setVisibility(View.VISIBLE);
+                                            stop_alarm_Rl.setVisibility(View.VISIBLE);
+                                            action_Tv2.setVisibility(View.GONE);
+                                            action_Tv1.setText("故障");
+                                            action_Tv1.setTextColor(Color.RED);
+                                            print_Rl.setVisibility(View.GONE);
+                                            pressure_Ll.setVisibility(View.GONE);
+                                            settings_Iv.setVisibility(View.GONE);
+                                            sendData(5);
+                                            mediaPlayer.start();
+                                            //warningBuffer.append(warningBuffer);
+                                            alarm_Tv.setText(warningBuffer.toString());
+                                            /*if (alarm == false){
                                                 alarm_Rl.setVisibility(View.VISIBLE);
                                                 stop_alarm_Rl.setVisibility(View.VISIBLE);
                                                 print_Rl.setVisibility(View.GONE);
@@ -503,15 +540,18 @@ public class MainActivity extends BaseActivity {
                                                 alarm_Tv.setText(warningBuffer.toString());
                                             }else {
 
-                                            }
+                                            }*/
                                         }else {//无异常，准备就绪
                                             alarm_Rl.setVisibility(View.GONE);
                                             stop_alarm_Rl.setVisibility(View.GONE);
                                             print_Rl.setVisibility(View.VISIBLE);
                                             pressure_Ll.setVisibility(View.VISIBLE);
+                                            action_Tv1.setText("卸液");
+
 
                                             action_Tv1.setText(getResources().getString(R.string.unloading_label));
                                         }
+
                                         //卸液
                                         if(receiveData.equals("2019")){
                                             action_Tv1.setText(getResources().getString(R.string.unloading_label));
@@ -601,22 +641,22 @@ public class MainActivity extends BaseActivity {
                     dialog.dismiss();
                     Toast.makeText(mContext,"登入成功！",Toast.LENGTH_SHORT).show();
 
-                    //开启 轮询 从机的状态
-                    SelectTask mySelectTask = new SelectTask(ttyS1OutputStream,7);
-                    //创建定时器对象
-                    Timer t= new Timer();
-                    //在0秒后执行MyTask类中的run方法,后面每20秒跑一次
-                    t.schedule(mySelectTask, 0,200);
+
 
                     if (Config.current_action_flag == 1){
                         startActivity(new Intent(MainActivity.this,SettingActivity.class));
                     }
                     if (Config.current_action_flag == 2){
+                        //开启 轮询 从机的状态
+                        SelectTask mySelectTask = new SelectTask(ttyS1OutputStream,7);
+                        //创建定时器对象
+                        Timer t= new Timer();
+                        //在0秒后执行MyTask类中的run方法,后面每0.2秒跑一次
+                        t.schedule(mySelectTask, 0,200);
                         if(action_Tv2.getText().equals(getResources().getString(R.string.ready_label))){
                             action_Tv2.setVisibility(View.GONE);
                             sendData(1);
                             action_Tv1.setText(getResources().getString(R.string.unloading_ready_label));
-
                         }else{
                             action_Tv1.setVisibility(View.VISIBLE);
                             action_Tv2.setVisibility(View.VISIBLE);

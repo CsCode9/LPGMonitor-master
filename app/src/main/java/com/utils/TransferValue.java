@@ -8,7 +8,23 @@ public class TransferValue {
     public static double getDoubleValue(String value1,String value2){
         int i1 = Integer.parseInt(value1,16);
         int i2 = Integer.parseInt(value2,16);
-        double d = ((i1 << 8) | i2)/100.0;
+        double d = ((i1 * 100) + i2)/100.0;
+        return d;
+    }
+
+    public static double getDoubleValueLiquidLevel(String value1,String value2){
+        int i1 = Integer.parseInt(value1,16);
+        int i2 = Integer.parseInt(value2,16);
+        double d = (i1 << 8) | i2;
+        return d;
+    }
+
+    public static double getDoubleValueFew(String value1,String value2, String value3, String value4){
+        int i1 = Integer.parseInt(value1,16);
+        int i2 = Integer.parseInt(value2,16);
+        int i3 = Integer.parseInt(value3, 16);
+        int i4 = Integer.parseInt(value4, 16);
+        double d = ((((i1 << 16) |(i2 << 8) | i3) * 100) + i4)/100.0;
         return d;
     }
 

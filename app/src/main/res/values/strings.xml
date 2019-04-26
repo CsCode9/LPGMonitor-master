@@ -19,6 +19,7 @@
     <string name="downtime_parameter">停机参数</string>
     <string name="unloading_parameter">卸液参数设置</string>
     <string name="gateway_parameter">网关参数设置</string>
+    <string name="setting_password_sure">您还未设置管理员密码和超级密码 \n请先设置超级密码和管理员密码</string>
     <string name="delay">15</string>
     <string name="delay_unit">s</string>
     <string name="stop_delay">停机延时</string>
